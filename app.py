@@ -179,6 +179,11 @@ This app predicts NBA game scores based on teams' last 5 games and season averag
 - Home court advantage is considered
 """)
 
+# Add GitHub link
+st.markdown("""
+[![GitHub](https://img.shields.io/badge/GitHub-View%20Source-181717?style=for-the-badge&logo=github)](https://github.com/bozanctn/NBA-Weighted-Average-Prediction-with-API)
+""")
+
 # Get team information
 team_info = get_team_info()
 
