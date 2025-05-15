@@ -198,95 +198,98 @@ with col2:
 
 if st.button("Predict"):
     if team_1_full and team_2_full:
-        with st.spinner('Fetching data and calculating...'):
-            home_scores = calculate_weighted_scores(team_1_full, team_info)
-            time.sleep(1)  # API rate limit wait
-            away_scores = calculate_weighted_scores(team_2_full, team_info)
+        if team_1_full == team_2_full:
+            st.error("Please select different teams for home and away.")
+        else:
+            with st.spinner('Fetching data and calculating...'):
+                home_scores = calculate_weighted_scores(team_1_full, team_info)
+                time.sleep(1)  # API rate limit wait
+                away_scores = calculate_weighted_scores(team_2_full, team_info)
 
-            if home_scores is not None and away_scores is not None:
-                home_expected, _ = home_scores
-                _, away_expected = away_scores
+                if home_scores is not None and away_scores is not None:
+                    home_expected, _ = home_scores
+                    _, away_expected = away_scores
 
-                if home_expected is not None and away_expected is not None:
-                    total_basket = home_expected + away_expected
-                    
-                    # Show results
-                    st.subheader("Prediction Results")
-                    
-                    # Create visualization
-                    fig = go.Figure(data=[
-                        go.Bar(name=f"{team_1_full} ({team_1})", x=['Home'], y=[home_expected], marker_color='blue'),
-                        go.Bar(name=f"{team_2_full} ({team_2})", x=['Away'], y=[away_expected], marker_color='red')
-                    ])
-                    
-                    fig.update_layout(
-                        title="Expected Score Distribution",
-                        xaxis_title="Team",
-                        yaxis_title="Expected Points",
-                        barmode='group',
-                        annotations=[
-                            dict(
-                                x=0,
-                                y=home_expected + 2,
-                                text=f"{home_expected:.1f}",
-                                showarrow=False,
-                                font=dict(size=12)
-                            ),
-                            dict(
-                                x=1,
-                                y=away_expected + 2,
-                                text=f"{away_expected:.1f}",
-                                showarrow=False,
-                                font=dict(size=12)
-                            )
-                        ]
-                    )
-                    
-                    st.plotly_chart(fig)
-                    
-                    # Prediction explanation
-                    st.markdown("""
-                    ### Prediction Explanation
-                    - **Blue bar**: Expected points for home team
-                    - **Red bar**: Expected points for away team
-                    - **Height**: Expected points for each team
-                    - **Difference**: Expected point difference between teams
-                    """)
-                    
-                    st.metric("Total Expected Points", f"{total_basket:.2f}")
-                    
-                    # Detailed information
-                    st.subheader("Detailed Information")
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.metric(f"{team_1_full} ({team_1}) Expected Points", f"{home_expected:.2f}")
-                    with col2:
-                        st.metric(f"{team_2_full} ({team_2}) Expected Points", f"{away_expected:.2f}")
-                    
-                    # Last 5 games summary
-                    st.subheader("Last 5 Games Summary")
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.write(f"**{team_1_full} ({team_1}) Last 5 Games:**")
-                        df1 = get_team_games(team_info[team_1_full]['id'], team_1_full)
-                        if df1 is not None:
-                            st.dataframe(df1[['GAME_DATE', 'MATCHUP', 'WL', 'PTS']].style.set_properties(**{
-                                'background-color': 'lightblue',
-                                'color': 'black',
-                                'border-color': 'white'
-                            }))
-                    with col2:
-                        st.write(f"**{team_2_full} ({team_2}) Last 5 Games:**")
-                        df2 = get_team_games(team_info[team_2_full]['id'], team_2_full)
-                        if df2 is not None:
-                            st.dataframe(df2[['GAME_DATE', 'MATCHUP', 'WL', 'PTS']].style.set_properties(**{
-                                'background-color': 'lightblue',
-                                'color': 'black',
-                                'border-color': 'white'
-                            }))
+                    if home_expected is not None and away_expected is not None:
+                        total_basket = home_expected + away_expected
+                        
+                        # Show results
+                        st.subheader("Prediction Results")
+                        
+                        # Create visualization
+                        fig = go.Figure(data=[
+                            go.Bar(name=f"{team_1_full} ({team_1})", x=['Home'], y=[home_expected], marker_color='blue'),
+                            go.Bar(name=f"{team_2_full} ({team_2})", x=['Away'], y=[away_expected], marker_color='red')
+                        ])
+                        
+                        fig.update_layout(
+                            title="Expected Score Distribution",
+                            xaxis_title="Team",
+                            yaxis_title="Expected Points",
+                            barmode='group',
+                            annotations=[
+                                dict(
+                                    x=0,
+                                    y=home_expected + 2,
+                                    text=f"{home_expected:.1f}",
+                                    showarrow=False,
+                                    font=dict(size=12)
+                                ),
+                                dict(
+                                    x=1,
+                                    y=away_expected + 2,
+                                    text=f"{away_expected:.1f}",
+                                    showarrow=False,
+                                    font=dict(size=12)
+                                )
+                            ]
+                        )
+                        
+                        st.plotly_chart(fig)
+                        
+                        # Prediction explanation
+                        st.markdown("""
+                        ### Prediction Explanation
+                        - **Blue bar**: Expected points for home team
+                        - **Red bar**: Expected points for away team
+                        - **Height**: Expected points for each team
+                        - **Difference**: Expected point difference between teams
+                        """)
+                        
+                        st.metric("Total Expected Points", f"{total_basket:.2f}")
+                        
+                        # Detailed information
+                        st.subheader("Detailed Information")
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.metric(f"{team_1_full} ({team_1}) Expected Points", f"{home_expected:.2f}")
+                        with col2:
+                            st.metric(f"{team_2_full} ({team_2}) Expected Points", f"{away_expected:.2f}")
+                        
+                        # Last 5 games summary
+                        st.subheader("Last 5 Games Summary")
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.write(f"**{team_1_full} ({team_1}) Last 5 Games:**")
+                            df1 = get_team_games(team_info[team_1_full]['id'], team_1_full)
+                            if df1 is not None:
+                                st.dataframe(df1[['GAME_DATE', 'MATCHUP', 'WL', 'PTS']].style.set_properties(**{
+                                    'background-color': 'lightblue',
+                                    'color': 'black',
+                                    'border-color': 'white'
+                                }))
+                        with col2:
+                            st.write(f"**{team_2_full} ({team_2}) Last 5 Games:**")
+                            df2 = get_team_games(team_info[team_2_full]['id'], team_2_full)
+                            if df2 is not None:
+                                st.dataframe(df2[['GAME_DATE', 'MATCHUP', 'WL', 'PTS']].style.set_properties(**{
+                                    'background-color': 'lightblue',
+                                    'color': 'black',
+                                    'border-color': 'white'
+                                }))
+                    else:
+                        st.error("An error occurred during calculation. Please try again.")
                 else:
-                    st.error("An error occurred during calculation. Please try again.")
-            else:
-                st.error("An error occurred while fetching data. Please try again.")
+                    st.error("An error occurred while fetching data. Please try again.")
     else:
         st.warning("Please select both teams.") 
